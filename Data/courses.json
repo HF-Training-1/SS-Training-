@@ -1,0 +1,15 @@
+{
+  "currency":"GBP",
+  "courses":[
+    {"id":"ADV-SF","name":"Advanced Skin Fade & Blending","hours":10,"price":149,"type":"CPD","status":"published","units":6},
+    {"id":"PSC","name":"Precision Scissor Cutting & Shape Control","hours":10,"price":149,"type":"CPD","status":"published","units":6},
+    {"id":"ABD","name":"Advanced Beard Design, Shape & Facial Hair","hours":10,"price":149,"type":"CPD","status":"published","units":6},
+    {"id":"COC","name":"Advanced Clipper-Over-Comb & Bulk Control","hours":10,"price":149,"type":"CPD","status":"published","units":6},
+    {"id":"TWS","name":"Texture, Weight & Modern Styling","hours":10,"price":149,"type":"CPD","status":"published","units":6},
+    {"id":"CFH","name":"Advanced Fading on Very Curly & Coily Hair","hours":10,"price":149,"type":"CPD","status":"published","units":6},
+    {"id":"ACA","name":"Advanced Consultation, Analysis & Personalisation","hours":10,"price":99,"type":"CPD","status":"published","units":6},
+    {"id":"CTE","name":"Creative Colour & Tonal Enhancement for Barbers","hours":10,"price":169,"type":"CPD","status":"published","units":6},
+    {"id":"AFP","name":"Advanced Finishing, Styling & Professional Presentation","hours":10,"price":99,"type":"CPD","status":"published","units":6},
+    {"id":"MBC","name":"Modern Barbering Trends, Research & Professional CPD","hours":10,"price":99,"type":"CPD","status":"published","units":6}
+  ]
+}

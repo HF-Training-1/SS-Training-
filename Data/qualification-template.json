@@ -1,0 +1,13 @@
+{
+  "id":"QUAL-LEVEL-2-BARBERING",
+  "name":"Level 2 Barbering",
+  "awardingOrganisation":"Configurable",
+  "version":"1.0",
+  "units":[
+    {"id":"201","code":"201","title":"Health, Safety & Professional Practice","learningOutcomes":[],"criteria":[]},
+    {"id":"203","code":"203","title":"Client Consultation","learningOutcomes":[],"criteria":[]},
+    {"id":"204","code":"204","title":"Shampooing & Conditioning","learningOutcomes":[],"criteria":[]},
+    {"id":"210","code":"210","title":"Cut Men's Hair","learningOutcomes":[],"criteria":[]},
+    {"id":"211","code":"211","title":"Cut Facial Hair","learningOutcomes":[],"criteria":[]}
+  ]
+}
