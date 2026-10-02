@@ -1,16 +1,17 @@
-# SS Training — Masterpiece Starter
+# SS Training GitHub Build
 
-A premium, mobile-first foundation for a barbering education platform.
+This is the polished front-end foundation for SS Training, an independent barbering CPD platform.
 
-## Run locally
-Because the project uses ES modules and JSON imports, serve the project root with a local web server rather than opening index.html directly.
+Included: responsive public site, original 3D hero artwork, ten CPD courses, pricing and course pathways, enquiry-assistant interface, learner login/dashboard, example lesson/quiz/reflection, tutor-support concept and admin dashboard shell.
 
-Example:
-python -m http.server 8080 --directory .
-Then open http://localhost:8080/public/
+Production backend:
+- Appwrite Auth for secure admin/tutor/learner accounts.
+- Appwrite database for enrolments, course access, progress, submissions, tutor assignments, assessments and certificates.
+- Appwrite Storage for evidence/media/certificates.
+- Server-side AI function for enquiries and rubric-based written-answer support. Never put private AI keys in GitHub/browser code.
+- Server-side email for account/set-password links after enrolment.
+- Server-side PDF certificate generation after completion rules are met.
 
-## GitHub Pages
-For GitHub Pages, either publish `/public` through a build step or move/copy the public assets to the repository root. The production build should eventually be generated from a proper app build system.
+Objective quizzes can auto-mark. Practical competence or uncertain written evidence should route to a human tutor/assessor.
 
-## Next build target
-Connect Appwrite for auth/database/storage, then build the three portals against the same API/data model.
+GitHub Pages: upload all files/folders to the repository root, then enable Pages from the main branch.

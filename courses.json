@@ -1,0 +1,172 @@
+[
+  {
+    "id": 1,
+    "title": "Modern Fading & Seamless Blending",
+    "tag": "Technical",
+    "price": 99,
+    "hours": 10,
+    "desc": "Low, mid, high, taper and burst fades; guidelines, weight, transitions, detailing and head-shape control.",
+    "modules": [
+      "Professional context & goals",
+      "Core knowledge",
+      "Technique / strategy development",
+      "Applied decision-making",
+      "Modern practice",
+      "Activity & reflection",
+      "Final knowledge assessment"
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Advanced Scissor Work & Precision Cutting",
+    "tag": "Technical",
+    "price": 99,
+    "hours": 10,
+    "desc": "Sectioning, elevation, graduation, layering, over-direction, scissor-over-comb, weight and texture.",
+    "modules": [
+      "Professional context & goals",
+      "Core knowledge",
+      "Technique / strategy development",
+      "Applied decision-making",
+      "Modern practice",
+      "Activity & reflection",
+      "Final knowledge assessment"
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Afro Shaping & Textured Hair Techniques",
+    "tag": "Texture",
+    "price": 109,
+    "hours": 10,
+    "desc": "Texture, density, shrinkage, freehand shaping, tapers, line-ups, symmetry and maintenance.",
+    "modules": [
+      "Professional context & goals",
+      "Core knowledge",
+      "Technique / strategy development",
+      "Applied decision-making",
+      "Modern practice",
+      "Activity & reflection",
+      "Final knowledge assessment"
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Beard Sculpting & Facial Design",
+    "tag": "Grooming",
+    "price": 89,
+    "hours": 10,
+    "desc": "Face shape, proportion, beard graduation, blending, symmetry, outlining and finishing.",
+    "modules": [
+      "Professional context & goals",
+      "Core knowledge",
+      "Technique / strategy development",
+      "Applied decision-making",
+      "Modern practice",
+      "Activity & reflection",
+      "Final knowledge assessment"
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Modern Barbering Trends & Creative Cutting",
+    "tag": "Creative",
+    "price": 89,
+    "hours": 10,
+    "desc": "Reference analysis, modern shapes, hybrid cutting, texture, movement and creative finishing.",
+    "modules": [
+      "Professional context & goals",
+      "Core knowledge",
+      "Technique / strategy development",
+      "Applied decision-making",
+      "Modern practice",
+      "Activity & reflection",
+      "Final knowledge assessment"
+    ]
+  },
+  {
+    "id": 6,
+    "title": "Client Consultation & Barber Communication",
+    "tag": "Client",
+    "price": 69,
+    "hours": 10,
+    "desc": "Questioning, listening, reference images, expectations, difficult conversations and retention.",
+    "modules": [
+      "Professional context & goals",
+      "Core knowledge",
+      "Technique / strategy development",
+      "Applied decision-making",
+      "Modern practice",
+      "Activity & reflection",
+      "Final knowledge assessment"
+    ]
+  },
+  {
+    "id": 7,
+    "title": "Building Your Barbering Business",
+    "tag": "Business",
+    "price": 79,
+    "hours": 10,
+    "desc": "Pricing, value, capacity, diary productivity, rebooking, service development and business goals.",
+    "modules": [
+      "Professional context & goals",
+      "Core knowledge",
+      "Technique / strategy development",
+      "Applied decision-making",
+      "Modern practice",
+      "Activity & reflection",
+      "Final knowledge assessment"
+    ]
+  },
+  {
+    "id": 8,
+    "title": "Social Media & Personal Branding for Barbers",
+    "tag": "Growth",
+    "price": 69,
+    "hours": 10,
+    "desc": "Brand identity, haircut photography, short-form video, content planning, calls to action and enquiries.",
+    "modules": [
+      "Professional context & goals",
+      "Core knowledge",
+      "Technique / strategy development",
+      "Applied decision-making",
+      "Modern practice",
+      "Activity & reflection",
+      "Final knowledge assessment"
+    ]
+  },
+  {
+    "id": 9,
+    "title": "Community Engagement & Client Growth",
+    "tag": "Community",
+    "price": 69,
+    "hours": 10,
+    "desc": "Inclusive service, partnerships, referrals, outreach, events, follow-up and measuring engagement.",
+    "modules": [
+      "Professional context & goals",
+      "Core knowledge",
+      "Technique / strategy development",
+      "Applied decision-making",
+      "Modern practice",
+      "Activity & reflection",
+      "Final knowledge assessment"
+    ]
+  },
+  {
+    "id": 10,
+    "title": "Barber Productivity & Professional Development",
+    "tag": "Professional",
+    "price": 69,
+    "hours": 10,
+    "desc": "Workflow, time, quality, reflective practice, CPD records, goals and personal development.",
+    "modules": [
+      "Professional context & goals",
+      "Core knowledge",
+      "Technique / strategy development",
+      "Applied decision-making",
+      "Modern practice",
+      "Activity & reflection",
+      "Final knowledge assessment"
+    ]
+  }
+]
