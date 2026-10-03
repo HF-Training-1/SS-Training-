@@ -55,3 +55,12 @@ Do not place Stripe secret keys, AI API keys or Appwrite server API keys in this
 After upload, the website footer must show **BUILD 6**. If BUILD 6 is not visible, GitHub Pages is still serving older files or the wrong folder/branch.
 
 Build 6 contains the six-month course update notice, fixed learner empty-state layout, cache-busted CSS/JS, and learner preview access to all courses.
+
+## Build 8 — approved dynamic certificate
+- Uses the approved SS Training certificate styling.
+- Learner name is generated from the learner profile after “This is to certify that”.
+- Course title, CPD hours, final score, completion date and unique certificate reference are generated automatically.
+- Shane Spellacey remains fixed as Founder & Director of SS Training.
+- Learners can open the certificate from **Learner Portal → Certificates** after achieving 80% or above.
+- Admin can preview/print passed certificates from **Admin → Certificates**.
+- `assets/approved-certificate-design.png` is included as the approved visual reference.
