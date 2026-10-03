@@ -49,3 +49,9 @@ Do not place Stripe secret keys, AI API keys or Appwrite server API keys in this
 4. Open Courses, choose the course you want to test, and use the preview unlock option.
 5. Complete it in order: learning sections → checks/activities → final assessment → result/certificate area.
 6. Repeat with another course. Preview mode is for owner testing only and must not be treated as a paid learner entitlement.
+
+
+## BUILD 6 CHECK
+After upload, the website footer must show **BUILD 6**. If BUILD 6 is not visible, GitHub Pages is still serving older files or the wrong folder/branch.
+
+Build 6 contains the six-month course update notice, fixed learner empty-state layout, cache-busted CSS/JS, and learner preview access to all courses.
