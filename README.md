@@ -34,3 +34,18 @@ Replace the matching files/folders in the repository with this package. Make sur
 - Production certificate record and verification.
 
 Do not place Stripe secret keys, AI API keys or Appwrite server API keys in this public GitHub repository.
+
+
+## v4 finishing fixes
+- Fixed the learner dashboard empty-state/Browse Courses overlap, including mobile layout.
+- Added the six-month course update promise to the public page.
+- Retained the © 2026 SS Training footer/copyright wording.
+- No payment provider has been activated by this patch; the secure enrolment gate remains ready for the later Stripe/Appwrite connection.
+
+## Owner course testing
+1. Open the live SS Training site.
+2. Add `?preview=1` to the end of the site address and press Enter.
+3. Sign in with your existing learner/admin test login if prompted.
+4. Open Courses, choose the course you want to test, and use the preview unlock option.
+5. Complete it in order: learning sections → checks/activities → final assessment → result/certificate area.
+6. Repeat with another course. Preview mode is for owner testing only and must not be treated as a paid learner entitlement.

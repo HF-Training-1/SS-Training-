@@ -6,3 +6,60 @@
 .exam-shell label:hover{border-color:#88bfe7}
 .exam-warning{padding:16px;border-left:4px solid #f27f8d;background:rgba(242,127,141,.08);margin:20px 0}
 .exam-result{text-align:center}.exam-result h1{font-size:72px;margin:15px 0}.no-paste{min-height:190px}
+
+
+/* ===== v4 finishing fixes: learner dashboard layout ===== */
+.portal-empty-state,
+.empty-state,
+.dashboard-empty,
+.enrolment-empty {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 28px;
+}
+.portal-empty-state > *,
+.empty-state > *,
+.dashboard-empty > *,
+.enrolment-empty > * {
+  min-width: 0;
+}
+.portal-empty-state .btn,
+.empty-state .btn,
+.dashboard-empty .btn,
+.enrolment-empty .btn,
+.portal-empty-state a,
+.empty-state a,
+.dashboard-empty a,
+.enrolment-empty a {
+  position: static !important;
+  white-space: nowrap;
+  justify-self: end;
+}
+@media (max-width: 760px) {
+  .portal-empty-state,
+  .empty-state,
+  .dashboard-empty,
+  .enrolment-empty {
+    grid-template-columns: 1fr;
+  }
+  .portal-empty-state .btn,
+  .empty-state .btn,
+  .dashboard-empty .btn,
+  .enrolment-empty .btn,
+  .portal-empty-state a,
+  .empty-state a,
+  .dashboard-empty a,
+  .enrolment-empty a {
+    justify-self: start;
+    white-space: normal;
+  }
+}
+
+.course-update-note {
+  max-width: 820px;
+  margin: 14px auto 0;
+  text-align: center;
+  line-height: 1.6;
+  opacity: .9;
+}
