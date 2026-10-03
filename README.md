@@ -1,25 +1,36 @@
-# SS Training — Course Engine Upgrade (October 2026)
+# SS Training — Finishing Upgrade v3
 
-Upload the contents of this folder to the root of the existing GitHub Pages repository, replacing the matching files.
+This package preserves the existing SS Training premium design and upgrades the learning/assessment engine.
 
-## What is live in this build
-- Existing premium SS Training design retained.
-- All 10 course cards open a structured 9-stage course pathway.
-- Every stage is clickable and can be revisited.
-- Knowledge checks work and must be passed before a stage can be completed.
-- Reflections save in the browser and are shown in the learner portfolio.
-- Progress is calculated from real completed stages (no hard-coded 42%).
-- Final assessment contains 10 questions and requires 80% to pass.
-- Course feedback is collected before certificate unlock.
-- Certificates unlock only when the course stages, assessment and feedback requirements are complete.
-- Dashboard Assessments, Tutor Support, Certificates and Portfolio buttons now work.
-- Tutor requests save locally ready for the live backend connection.
-- Video positions exist in every learning stage. Add approved video embed URLs to `learning-data.js` in the `video` fields.
+## What changed
+- All 10 courses retain their existing titles/prices and now use deeper professional reasoning content.
+- Every module knowledge check has 4 plausible options.
+- Written professional evidence requires 120+ words and blocks paste.
+- Final assessment draws 15 questions from a 20-question bank, randomises questions and answers, requires 80%, and removes course navigation while active.
+- Assessment integrity logs copy/cut/paste/right-click and focus/tab events.
+- Public course pages are payment-gated: unpaid visitors see **Enrol now — £price**, not Open Course.
+- No live payment is faked. Production purchase unlocking must come from a server-confirmed Stripe payment tied to the learner's Appwrite account.
+- `?preview=1` enables admin preview mode so you can test/unlock courses before Stripe is connected.
+- Video slots remain ready for approved SS Training videos.
+- AI remains a secure server-side connection point; no AI secret is placed in GitHub.
 
-## Important before public paid launch
-This is a functional GitHub Pages course engine, but GitHub Pages is front-end hosting. Browser localStorage is not a secure learner database and will not follow a learner between devices. The next production step is to connect Appwrite Authentication + Database/Storage so accounts, progress, assessment evidence, support messages and certificates are stored server-side.
+## GitHub upload
+Replace the matching files/folders in the repository with this package. Make sure `course-content/`, `learning-data.js`, `app.js`, `styles.css`, `courses.json`, and `index.html` are all present.
 
-The AI Course Assistant is intentionally not given a secret API key in browser code. A live AI assistant needs a secure Appwrite Function/server endpoint so the key cannot be stolen from GitHub. The UI connection point remains in place.
+## Test checklist
+1. Open a course while NOT using preview mode: it should show **Enrol now** and should not open learning.
+2. Add `?preview=1` to the site URL, open a course and use the preview unlock button.
+3. Complete a module: four options should appear and the reflection should require 120+ words.
+4. On the last module, start the final assessment. Course navigation should disappear.
+5. Try paste/right-click and change browser tab; the assessment should log integrity events.
+6. Submit all 15 questions and verify the score.
+7. Confirm the premium visual design remains unchanged.
 
-## Course-hour wording
-The courses are presented as 10 CPD-hour programmes. The engine records completion evidence rather than pretending that a learner spent a fixed number of hours on a page. Do not hard-code fake elapsed learning time. Your CPD policy/certificate wording should reflect how SS Training validates the advertised learning hours.
+## Production connections still required
+- Appwrite real authentication and per-user course entitlement/progress storage.
+- Stripe Checkout + server-side webhook/Appwrite Function to grant entitlements after confirmed payment.
+- Approved SS Training video URLs/files.
+- Server-side AI tutor/marker.
+- Production certificate record and verification.
+
+Do not place Stripe secret keys, AI API keys or Appwrite server API keys in this public GitHub repository.
