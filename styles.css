@@ -63,3 +63,13 @@
   line-height: 1.6;
   opacity: .9;
 }
+
+/* v5 exact layout fixes */
+.home-update-note{max-width:720px;margin:18px 0 0!important;color:#8f99a5!important;font-size:12px!important;line-height:1.6!important}
+.home-update-note strong,.course-update-note strong{color:#dce5ee}
+.course-update-note{display:block;max-width:760px;margin:18px 0 0!important;text-align:left!important;color:#8f99a5!important;font-size:13px!important;line-height:1.65!important;letter-spacing:0!important;position:static!important}
+.continue.empty-learning{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"title button" "copy button";column-gap:32px;row-gap:10px;align-items:center;min-height:160px}
+.continue.empty-learning h2{grid-area:title;margin:0}
+.continue.empty-learning p{grid-area:copy;margin:0;max-width:650px;line-height:1.6}
+.continue.empty-learning .cta{grid-area:button;float:none!important;margin:0!important;white-space:nowrap;align-self:center}
+@media(max-width:850px){.continue.empty-learning{grid-template-columns:1fr;grid-template-areas:"title" "copy" "button"}.continue.empty-learning .cta{justify-self:start;margin-top:8px!important}.course-update-note{text-align:left!important}.home-update-note{margin-bottom:8px!important}}
