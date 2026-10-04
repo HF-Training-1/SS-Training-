@@ -100,3 +100,6 @@
 .mobile-enquire{display:none;position:fixed;right:16px;bottom:18px;z-index:999;border:0;border-radius:999px;padding:13px 18px;background:linear-gradient(100deg,#79d7ff,#ff7898);color:#fff;font-weight:800;box-shadow:0 12px 35px #0008}
 .assistant-courses{display:grid;gap:8px;margin-top:12px}.assistant-course{display:grid;width:100%;gap:4px;text-align:left;padding:12px 14px;border:1px solid #ffffff20;border-radius:12px;background:#ffffff08}.assistant-course small{opacity:.7}.human-handoff{display:grid;gap:10px;margin:14px 0;padding:16px;border:1px solid #ffffff20;border-radius:16px;background:#ffffff06}.human-handoff small{opacity:.72}.human-handoff input,.human-handoff textarea{width:100%;box-sizing:border-box;padding:12px;border:1px solid #ffffff20;border-radius:10px;background:#080a0d;color:#fff}.human-handoff textarea{min-height:110px;resize:vertical}.assistant-human{margin:8px 0 16px}
 @media(max-width:850px){.mobile-enquire{display:block}header{padding-left:18px;padding-right:18px}.brand span{font-size:14px}.brand small{font-size:7px}.chat{margin-bottom:80px}.narrow{padding-left:18px;padding-right:18px}.sitefoot{padding-bottom:88px}}
+
+/* Secure backend preparation v9 */
+.enquiry-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
