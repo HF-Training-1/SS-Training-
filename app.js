@@ -36,7 +36,53 @@ function portalCourse(active){let s=cs(active.id),d=SS_CONTENT[active.id],pct=Ma
 function portalPanel(type){let ownedC=C.filter(c=>owned(c.id)),out='';if(type==='assess')out='<h2>Assessments</h2>'+ownedC.map(c=>`<p><b>${c.title}</b> — ${cs(c.id).finalScore===null?'Not attempted':cs(c.id).finalScore+'%'}</p>`).join('');if(type==='cert')out='<h2>My certificates</h2>'+ownedC.map(c=>cs(c.id).finalScore>=80?`<article class="review-card"><h3>${c.title}</h3><p>Pass recorded • ${c.hours} CPD hours • Final score ${cs(c.id).finalScore}%</p><button class="cta learnerCert" data-course="${c.id}">View / save certificate →</button></article>`:`<p><b>${c.title}</b> — Not yet unlocked. Complete the course and achieve at least 80%.</p>`).join('');if(type==='portfolio')out='<h2>Learning portfolio</h2>'+ownedC.map(c=>`<p><b>${c.title}</b> — ${cs(c.id).completed.length}/${SS_CONTENT[c.id].modules.length} stages, ${Object.keys(cs(c.id).reflections).length} written evidence item(s)</p>`).join('');$('portalPanel').innerHTML=out;document.querySelectorAll('.learnerCert').forEach(b=>b.onclick=()=>showLearnerCertificate(+b.dataset.course))}
 function openTutor(id){renderPortal();go('portal');let c=C.find(x=>x.id===id);$('portalPanel').innerHTML=`<h2>Tutor support</h2><p>Ask for human support with <b>${c.title}</b>. AI support will later handle routine learning help; tutors remain available for escalation and professional review.</p><button class="soft" id="backToCourse">← Back to course</button><textarea id="tutorMsg" placeholder="What do you need help with?"></textarea><button class="cta" id="sendTutor">Save support request</button><p id="tutorStatus"></p>`;$('backToCourse').onclick=()=>openCourse(id,currentModule);$('sendTutor').onclick=()=>{let t=$('tutorMsg').value.trim();if(!t)return;state.support=state.support||[];state.support.push({course:id,message:t,date:new Date().toISOString(),status:'Open'});save();$('tutorStatus').textContent='Support request saved ✓'}}
 $('learner').onclick=()=>{if(!Object.values(state.entitlements||{}).some(x=>x?.status==='paid'))return alert('No active paid course is assigned to this learner yet.');renderPortal();go('portal')};$('admin').onclick=()=>go('adminpage');
-function send(t){if(!t.trim())return;msgs.innerHTML+=`<p class="me">${t}</p><p>The secure AI connection point is reserved. The production AI must run server-side so no provider key is exposed in GitHub.</p>`;msg.value=''}$('send').onclick=()=>send(msg.value);document.querySelectorAll('.quick button').forEach(b=>b.onclick=()=>send(b.textContent));msg.onkeydown=e=>{if(e.key==='Enter')send(msg.value)};
+// SS Course Assistant: useful immediately with no API key exposed in GitHub.
+// It guides visitors from the approved course catalogue and escalates nuanced enquiries to a human.
+const SS_CONTACT_EMAIL='sstrainingonline@gmail.com';
+function esc(s=''){return String(s).replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[c]))}
+function courseMatches(text){
+  const t=text.toLowerCase();
+  const map=[
+    [1,['fade','fading','blend','blending','skin fade','taper']],
+    [2,['scissor','scissors','precision','layer','graduation','cutting']],
+    [3,['afro','texture','textured','coily','curl','shaping']],
+    [4,['beard','facial hair','shave','shaping beard']],
+    [5,['consult','consultation','client journey','communication','service']],
+    [6,['business','price','pricing','profit','money','finance','shop owner']],
+    [7,['productivity','time','diary','booking','workflow','efficiency']],
+    [8,['social','instagram','content','marketing','online','brand']],
+    [9,['community','client growth','clients','clientele','network','event','pop-up']],
+    [10,['wellbeing','well-being','health','posture','burnout','professional practice']]
+  ];
+  return map.map(([id,words])=>({id,score:words.reduce((n,w)=>n+(t.includes(w)?1:0),0)})).filter(x=>x.score).sort((a,b)=>b.score-a.score).map(x=>C.find(c=>c.id===x.id)).filter(Boolean).slice(0,3)
+}
+function assistantReply(t){
+  const q=t.toLowerCase();
+  if(/human|person|admin|speak|call|contact|complaint|refund|payment problem|certificate problem|login problem/.test(q)) return {human:true,text:'This is best handled by a person. Send the details below and SS Training can deal with it directly.'};
+  if(/price|cost|how much|£/.test(q)) return {text:'Each course page shows its current price and CPD hours. The present collection is made up of 10 specialist, self-paced courses. Tell me the skill you want to develop and I can point you to the closest match.'};
+  if(/certificate|cpd/.test(q)) return {text:'SS Training courses are structured CPD. Learners complete the required stages and final assessment before a personalised course certificate is released. The certificate records the course and CPD hours.'};
+  if(/how.*work|assessment|exam|pass/.test(q)) return {text:'You work through each learning stage in order, complete the knowledge checks and written professional application, then take the controlled final assessment. The current pass requirement is 80%. You cannot skip unfinished stages.'};
+  const m=courseMatches(t);
+  if(m.length){return {text:`Based on what you have told me, ${m.length>1?'these are the strongest matches':'the strongest match'}:`,courses:m}}
+  return {text:'I can help you choose from SS Training’s barbering and professional-development courses. Tell me what you want to improve — for example technique, scissor work, textured hair, beard work, business, productivity, social media, client growth or professional wellbeing. If your question needs individual advice, I can pass it to a person.'};
+}
+function addHumanForm(original){
+  msgs.insertAdjacentHTML('beforeend',`<div class="human-handoff"><b>Ask SS Training</b><small>A person can take over when the question needs individual help.</small><input id="handoffName" placeholder="Your name"><input id="handoffEmail" type="email" placeholder="Your email"><textarea id="handoffText" placeholder="Your question">${esc(original)}</textarea><button class="cta" id="handoffSend">Send to SS Training →</button><small id="handoffStatus"></small></div>`);
+  $('handoffSend').onclick=()=>{const name=$('handoffName').value.trim(),email=$('handoffEmail').value.trim(),body=$('handoffText').value.trim();if(!name||!email||!body){$('handoffStatus').textContent='Please add your name, email and question.';return}const subject=encodeURIComponent('SS Training course enquiry — '+name),message=encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nEnquiry:\n${body}`);location.href=`mailto:${SS_CONTACT_EMAIL}?subject=${subject}&body=${message}`;$('handoffStatus').textContent='Your email app has been opened with the enquiry ready to send.'}
+}
+function send(t){
+  t=t.trim(); if(!t)return;
+  msgs.insertAdjacentHTML('beforeend',`<p class="me">${esc(t)}</p>`); msg.value='';
+  const r=assistantReply(t); let html=`<p>${esc(r.text)}`;
+  if(r.courses?.length) html+=`<span class="assistant-courses">${r.courses.map(c=>`<button class="assistant-course" data-course="${c.id}"><b>${esc(c.title)}</b><small>${c.hours} CPD hours • £${c.price}</small></button>`).join('')}</span>`;
+  html+='</p>'; msgs.insertAdjacentHTML('beforeend',html);
+  msgs.querySelectorAll('.assistant-course').forEach(b=>b.onclick=()=>detail(+b.dataset.course));
+  if(r.human)addHumanForm(t);
+  else if(!r.courses?.length) msgs.insertAdjacentHTML('beforeend','<button class="soft assistant-human">I need to ask a person →</button>');
+  msgs.querySelectorAll('.assistant-human').forEach(b=>b.onclick=()=>{b.remove();addHumanForm(t)});
+  msgs.scrollTop=msgs.scrollHeight;
+}
+$('send').onclick=()=>send(msg.value);document.querySelectorAll('.quick button').forEach(b=>b.onclick=()=>send(b.textContent));msg.onkeydown=e=>{if(e.key==='Enter')send(msg.value)};
 
 
 // BUILD 7 — interim admin operations, manual enrolment and certificate workflow.
