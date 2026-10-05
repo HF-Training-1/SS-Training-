@@ -7,7 +7,9 @@ export default async ({ req, res, log, error }) => {
   try {
     log('SS Training enquiry function started');
 
+    // -----------------------------------------
     // 1. Read JSON sent from website
+    // -----------------------------------------
     let payload = {};
 
     try {
@@ -28,7 +30,9 @@ export default async ({ req, res, log, error }) => {
       );
     }
 
+    // -----------------------------------------
     // 2. Check request action
+    // -----------------------------------------
     if (payload.action !== 'create') {
       return res.json(
         {
@@ -39,7 +43,9 @@ export default async ({ req, res, log, error }) => {
       );
     }
 
+    // -----------------------------------------
     // 3. Clean and validate enquiry
+    // -----------------------------------------
     const enquiry = payload.enquiry || {};
 
     const name = clean(enquiry.name, 120);
@@ -59,7 +65,9 @@ export default async ({ req, res, log, error }) => {
       );
     }
 
+    // -----------------------------------------
     // 4. Appwrite settings
+    // -----------------------------------------
     const endpoint =
       process.env.APPWRITE_FUNCTION_API_ENDPOINT;
 
@@ -99,7 +107,9 @@ export default async ({ req, res, log, error }) => {
       );
     }
 
+    // -----------------------------------------
     // 5. Secure Appwrite server connection
+    // -----------------------------------------
     const client = new Client()
       .setEndpoint(endpoint)
       .setProject(projectId)
@@ -107,17 +117,22 @@ export default async ({ req, res, log, error }) => {
 
     const tablesDB = new TablesDB(client);
 
+    // -----------------------------------------
     // 6. Data matching your Enquiries table
+    // -----------------------------------------
     const data = {
       name,
       email,
       question,
-      status: 'new'
+      status: 'new',
+      source: 'course-assistant'
     };
 
     log('Attempting to create enquiry row...');
 
+    // -----------------------------------------
     // 7. Save enquiry
+    // -----------------------------------------
     const row = await tablesDB.createRow({
       databaseId,
       tableId,
@@ -127,7 +142,9 @@ export default async ({ req, res, log, error }) => {
 
     log(`Enquiry saved successfully: ${row.$id}`);
 
+    // -----------------------------------------
     // 8. Success response
+    // -----------------------------------------
     return res.json(
       {
         ok: true,
