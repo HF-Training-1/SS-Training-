@@ -1,29 +1,23 @@
-import { Client, Databases, ID } from 'node-appwrite';
+import { Client, TablesDB, ID } from 'node-appwrite';
 
-const clean = (value, max = 2000) => {
-  return String(value ?? '').trim().slice(0, max);
-};
+const clean = (value, max = 2000) =>
+  String(value ?? '').trim().slice(0, max);
 
 export default async ({ req, res, log, error }) => {
   try {
     log('SS Training enquiry function started');
 
-    // -----------------------------------------
-    // 1. Read request
-    // -----------------------------------------
+    // 1. Read JSON sent from website
     let payload = {};
 
     try {
-      if (req.bodyJson) {
-        payload = req.bodyJson;
-      } else if (req.body) {
-        payload =
-          typeof req.body === 'string'
-            ? JSON.parse(req.body)
-            : req.body;
+      payload = req.bodyJson || {};
+
+      if (!payload || typeof payload !== 'object') {
+        payload = {};
       }
-    } catch (parseError) {
-      error(`Body parsing failed: ${parseError.message}`);
+    } catch (err) {
+      error(`Body parsing failed: ${err.message}`);
 
       return res.json(
         {
@@ -34,9 +28,7 @@ export default async ({ req, res, log, error }) => {
       );
     }
 
-    // -----------------------------------------
-    // 2. Check action
-    // -----------------------------------------
+    // 2. Check request action
     if (payload.action !== 'create') {
       return res.json(
         {
@@ -47,9 +39,7 @@ export default async ({ req, res, log, error }) => {
       );
     }
 
-    // -----------------------------------------
-    // 3. Validate enquiry
-    // -----------------------------------------
+    // 3. Clean and validate enquiry
     const enquiry = payload.enquiry || {};
 
     const name = clean(enquiry.name, 120);
@@ -69,9 +59,7 @@ export default async ({ req, res, log, error }) => {
       );
     }
 
-    // -----------------------------------------
-    // 4. Check Appwrite configuration
-    // -----------------------------------------
+    // 4. Appwrite settings
     const endpoint =
       process.env.APPWRITE_FUNCTION_API_ENDPOINT;
 
@@ -81,7 +69,7 @@ export default async ({ req, res, log, error }) => {
     const databaseId =
       process.env.SS_DATABASE_ID;
 
-    const collectionId =
+    const tableId =
       process.env.SS_ENQUIRIES_COLLECTION_ID;
 
     const apiKey =
@@ -90,14 +78,14 @@ export default async ({ req, res, log, error }) => {
     log(`Endpoint available: ${Boolean(endpoint)}`);
     log(`Project ID available: ${Boolean(projectId)}`);
     log(`Database ID available: ${Boolean(databaseId)}`);
-    log(`Collection ID available: ${Boolean(collectionId)}`);
+    log(`Enquiries table ID available: ${Boolean(tableId)}`);
     log(`Runtime API key available: ${Boolean(apiKey)}`);
 
     if (
       !endpoint ||
       !projectId ||
       !databaseId ||
-      !collectionId ||
+      !tableId ||
       !apiKey
     ) {
       error('One or more required Appwrite values are missing.');
@@ -111,59 +99,50 @@ export default async ({ req, res, log, error }) => {
       );
     }
 
-    // -----------------------------------------
-    // 5. Create secure Appwrite client
-    // -----------------------------------------
+    // 5. Secure Appwrite server connection
     const client = new Client()
       .setEndpoint(endpoint)
       .setProject(projectId)
       .setKey(apiKey);
 
-    const databases = new Databases(client);
+    const tablesDB = new TablesDB(client);
 
-    // -----------------------------------------
-    // 6. Prepare database information
-    // -----------------------------------------
+    // 6. Data matching your Enquiries table
     const data = {
       name,
       email,
       question,
-      status: 'new',
-      source: 'course-assistant',
-      courseInterest: JSON.stringify(
-        enquiry.courseInterest || []
-      )
+      status: 'new'
     };
 
-    log('Attempting to save enquiry to Appwrite...');
+    log('Attempting to create enquiry row...');
 
-    // -----------------------------------------
     // 7. Save enquiry
-    // -----------------------------------------
-    const document = await databases.createDocument(
+    const row = await tablesDB.createRow({
       databaseId,
-      collectionId,
-      ID.unique(),
+      tableId,
+      rowId: ID.unique(),
       data
-    );
+    });
 
-    log(`Enquiry saved successfully: ${document.$id}`);
+    log(`Enquiry saved successfully: ${row.$id}`);
 
-    // -----------------------------------------
-    // 8. Success
-    // -----------------------------------------
+    // 8. Success response
     return res.json(
       {
         ok: true,
-        id: document.$id,
+        id: row.$id,
         message: 'Enquiry received successfully.'
       },
       200
     );
 
   } catch (err) {
-    // Give Appwrite useful diagnostic information
-    error(`SS Training enquiry error: ${err?.message || String(err)}`);
+    error(
+      `SS Training enquiry error: ${
+        err?.message || String(err)
+      }`
+    );
 
     if (err?.code) {
       error(`Appwrite error code: ${err.code}`);
@@ -174,11 +153,17 @@ export default async ({ req, res, log, error }) => {
     }
 
     if (err?.response) {
-      error(`Appwrite response: ${JSON.stringify(err.response)}`);
+      error(
+        `Appwrite response: ${JSON.stringify(err.response)}`
+      );
     }
 
     if (err?.cause) {
-      error(`Underlying cause: ${String(err.cause)}`);
+      error(
+        `Underlying cause: ${
+          err.cause?.message || String(err.cause)
+        }`
+      );
     }
 
     return res.json(
