@@ -103,3 +103,24 @@
 
 /* Secure backend preparation v9 */
 .enquiry-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+/* Mobile learner login - matches existing mobile enquiry button */
+.mobile-login{
+  display:none;
+}
+
+@media(max-width:850px){
+  .mobile-login{
+    display:block;
+    position:fixed;
+    right:16px;
+    bottom:78px;
+    z-index:999;
+    border:1px solid rgba(255,255,255,.30);
+    border-radius:999px;
+    padding:13px 18px;
+    background:#141922;
+    color:#fff;
+    font-weight:800;
+    box-shadow:0 12px 35px #0008;
+  }
+}
