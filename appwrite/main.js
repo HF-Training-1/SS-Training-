@@ -13,13 +13,20 @@ export default async ({ req, res, log, error }) => {
     let payload = {};
 
     try {
-      payload = req.bodyJson || {};
+      if (req.bodyJson && typeof req.bodyJson === 'object') {
+        payload = req.bodyJson;
+      } else if (req.body) {
+        payload =
+          typeof req.body === 'string'
+            ? JSON.parse(req.body)
+            : req.body;
+      }
 
       if (!payload || typeof payload !== 'object') {
         payload = {};
       }
     } catch (err) {
-      error(`Body parsing failed: ${err.message}`);
+      error(`Body parsing failed: ${err?.message || String(err)}`);
 
       return res.json(
         {
@@ -118,26 +125,27 @@ export default async ({ req, res, log, error }) => {
     const tablesDB = new TablesDB(client);
 
     // -----------------------------------------
-    // 6. Data matching your Enquiries table
+    // 6. Data matching the Enquiries table
     // -----------------------------------------
     const data = {
-      name,
-      email,
-      question,
+      name: name,
+      email: email,
+      question: question,
       status: 'new',
       source: 'course-assistant'
     };
 
+    log(`Data being sent: ${JSON.stringify(data)}`);
     log('Attempting to create enquiry row...');
 
     // -----------------------------------------
     // 7. Save enquiry
     // -----------------------------------------
     const row = await tablesDB.createRow({
-      databaseId,
-      tableId,
+      databaseId: databaseId,
+      tableId: tableId,
       rowId: ID.unique(),
-      data
+      data: data
     });
 
     log(`Enquiry saved successfully: ${row.$id}`);
