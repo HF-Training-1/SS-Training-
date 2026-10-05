@@ -47,7 +47,7 @@ async function ssIsAdmin(){
     await ssAppwriteRequest('/account');
     const data=await ssAppwriteRequest('/account/memberships');
     const memberships=data?.memberships||[];
-    SS_ADMIN_AUTHORISED=memberships.some(m=>m.teamId===SS_ADMIN_TEAM_ID&&m.confirm===true);
+    SS_ADMIN_AUTHORISED=memberships.some(m=>m.teamId===SS_ADMIN_TEAM_ID);
     return SS_ADMIN_AUTHORISED;
   }catch(e){
     SS_ADMIN_AUTHORISED=false;
