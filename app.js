@@ -2,11 +2,93 @@ let C=[]; let currentCourse=1; let currentModule=0; let exam=null;
 const pages=[...document.querySelectorAll('.page')], $=id=>document.getElementById(id);
 const storeKey='ssTrainingV3';
 const state=JSON.parse(localStorage.getItem(storeKey)||'{"courses":{},"profile":{"name":"SS Learner"},"entitlements":{},"integrity":[]}');
-let PREVIEW=new URLSearchParams(location.search).get('preview')==='1'||sessionStorage.getItem('ssPreview')==='1';
+// Public preview bypass disabled for the live site.
+let PREVIEW=false;
 function save(){localStorage.setItem(storeKey,JSON.stringify(state))}
 let restoringHistory=false;
 function historyStateFor(id){return {page:id,course:currentCourse,module:currentModule}}
+
+// SS TRAINING — secure Appwrite admin access.
+// The Team ID is an identifier, not a password/secret. No admin password is stored in GitHub.
+const SS_ADMIN_TEAM_ID='6ac02c66003dfcb821ad';
+let SS_ADMIN_AUTHORISED=false;
+
+async function ssAppwriteRequest(path,options={}){
+  const cfg=window.SS_APPWRITE||{};
+  if(!cfg.endpoint||!cfg.projectId)throw new Error('Appwrite configuration is missing.');
+  const response=await fetch(`${cfg.endpoint.replace(/\/$/,'')}${path}`,{
+    ...options,
+    credentials:'include',
+    headers:{
+      'Content-Type':'application/json',
+      'X-Appwrite-Project':cfg.projectId,
+      ...(options.headers||{})
+    }
+  });
+  if(!response.ok){
+    let message='Appwrite request failed.';
+    try{const data=await response.json();message=data.message||message}catch(e){}
+    throw new Error(message);
+  }
+  if(response.status===204)return null;
+  return response.json();
+}
+
+async function ssCreateSession(email,password){
+  try{await ssAppwriteRequest('/account/sessions/current',{method:'DELETE'})}catch(e){}
+  return ssAppwriteRequest('/account/sessions/email',{
+    method:'POST',
+    body:JSON.stringify({email,password})
+  });
+}
+
+async function ssIsAdmin(){
+  try{
+    await ssAppwriteRequest('/account');
+    const data=await ssAppwriteRequest('/account/memberships');
+    const memberships=data?.memberships||[];
+    SS_ADMIN_AUTHORISED=memberships.some(m=>m.teamId===SS_ADMIN_TEAM_ID&&m.confirm===true);
+    return SS_ADMIN_AUTHORISED;
+  }catch(e){
+    SS_ADMIN_AUTHORISED=false;
+    return false;
+  }
+}
+
+async function ssAdminLogin(){
+  const loginPage=$('login');
+  const email=loginPage?.querySelector('input[type="email"],input:not([type="password"])');
+  const password=loginPage?.querySelector('input[type="password"]');
+  const button=$('admin');
+  if(!email||!password)return alert('The login fields could not be found.');
+  const enteredEmail=email.value.trim();
+  const enteredPassword=password.value;
+  if(!enteredEmail||!enteredPassword)return alert('Please enter your email address and password.');
+
+  const oldText=button?.textContent||'Admin portal';
+  if(button){button.disabled=true;button.textContent='Checking access…'}
+  try{
+    await ssCreateSession(enteredEmail,enteredPassword);
+    if(!await ssIsAdmin()){
+      try{await ssAppwriteRequest('/account/sessions/current',{method:'DELETE'})}catch(e){}
+      return alert('Admin access denied. This account is not authorised for SS Training Admin.');
+    }
+    password.value='';
+    refreshAdmin();
+    wireAdminActions();
+    go('adminpage',{adminVerified:true});
+  }catch(error){
+    console.warn('SS Training admin login failed',error);
+    alert('Login unsuccessful. Please check your email address and password.');
+  }finally{
+    if(button){button.disabled=false;button.textContent=oldText}
+  }
+}
 function go(id,opts={}){
+  if(id==='adminpage'&&!SS_ADMIN_AUTHORISED&&!opts.adminVerified){
+    if(location.hash==='#adminpage')history.replaceState({page:'login'},'','#login');
+    id='login';
+  }
   pages.forEach(p=>p.classList.remove('active'));$(id)?.classList.add('active');scrollTo(0,0);
   if(!opts.fromHistory){
     const st=historyStateFor(id), url='#'+id;
@@ -23,7 +105,12 @@ function restoreHistory(st){
 }
 window.addEventListener('popstate',e=>restoreHistory(e.state||{page:(location.hash||'#home').slice(1)}));
 document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>go(b.dataset.page));
-history.replaceState({page:(location.hash||'#home').slice(1)},'',location.hash||'#home');
+if(location.hash==='#adminpage'){
+  history.replaceState({page:'login'},'','#login');
+  go('login',{fromHistory:true});
+}else{
+  history.replaceState({page:(location.hash||'#home').slice(1)},'',location.hash||'#home');
+}
 function cs(id){return state.courses[id]||(state.courses[id]={completed:[],answers:{},reflections:{},started:Date.now(),finalScore:null,feedback:null,attempts:[]})}
 function owned(id){return PREVIEW||state.entitlements[id]?.status==='paid'}
 function logIntegrity(type,extra={}){state.integrity.push({type,course:currentCourse,at:new Date().toISOString(),...extra});save()}
@@ -53,7 +140,7 @@ function renderPortal(){if(!C.length)return;let ownedCourses=C.filter(c=>owned(c
 function portalCourse(active){let s=cs(active.id),d=SS_CONTENT[active.id],pct=Math.round(s.completed.length/d.modules.length*100);return `<div class="continue"><i>CONTINUE LEARNING</i><h2>${active.title}</h2><p>Stage ${Math.min(s.completed.length+1,d.modules.length)} — ${d.modules[Math.min(s.completed.length,d.modules.length-1)].title}</p><div class="progress"><b style="width:${pct}%"></b></div><small>${pct}% complete • ${s.completed.length}/${d.modules.length} stages complete</small><button class="cta" id="continueCourse">Continue →</button></div><div class="stats"><span><b>${s.completed.length}</b>Stages</span><span><b>${s.finalScore??'—'}${s.finalScore!==null?'%':''}</b>Final score</span><span><b>${s.attempts.length}</b>Assessment attempts</span><span><b>Available</b>Tutor support</span></div>`}
 function portalPanel(type){let ownedC=C.filter(c=>owned(c.id)),out='';if(type==='assess')out='<h2>Assessments</h2>'+ownedC.map(c=>`<p><b>${c.title}</b> — ${cs(c.id).finalScore===null?'Not attempted':cs(c.id).finalScore+'%'}</p>`).join('');if(type==='cert')out='<h2>My certificates</h2>'+ownedC.map(c=>cs(c.id).finalScore>=80?`<article class="review-card"><h3>${c.title}</h3><p>Pass recorded • ${c.hours} CPD hours • Final score ${cs(c.id).finalScore}%</p><button class="cta learnerCert" data-course="${c.id}">View / save certificate →</button></article>`:`<p><b>${c.title}</b> — Not yet unlocked. Complete the course and achieve at least 80%.</p>`).join('');if(type==='portfolio')out='<h2>Learning portfolio</h2>'+ownedC.map(c=>`<p><b>${c.title}</b> — ${cs(c.id).completed.length}/${SS_CONTENT[c.id].modules.length} stages, ${Object.keys(cs(c.id).reflections).length} written evidence item(s)</p>`).join('');$('portalPanel').innerHTML=out;document.querySelectorAll('.learnerCert').forEach(b=>b.onclick=()=>showLearnerCertificate(+b.dataset.course))}
 function openTutor(id){renderPortal();go('portal');let c=C.find(x=>x.id===id);$('portalPanel').innerHTML=`<h2>Tutor support</h2><p>Ask for human support with <b>${c.title}</b>. AI support will later handle routine learning help; tutors remain available for escalation and professional review.</p><button class="soft" id="backToCourse">← Back to course</button><textarea id="tutorMsg" placeholder="What do you need help with?"></textarea><button class="cta" id="sendTutor">Save support request</button><p id="tutorStatus"></p>`;$('backToCourse').onclick=()=>openCourse(id,currentModule);$('sendTutor').onclick=()=>{let t=$('tutorMsg').value.trim();if(!t)return;state.support=state.support||[];state.support.push({course:id,message:t,date:new Date().toISOString(),status:'Open'});save();$('tutorStatus').textContent='Support request saved ✓'}}
-$('learner').onclick=()=>{if(!Object.values(state.entitlements||{}).some(x=>x?.status==='paid'))return alert('No active paid course is assigned to this learner yet.');renderPortal();go('portal')};$('admin').onclick=()=>go('adminpage');
+$('learner').onclick=()=>{if(!Object.values(state.entitlements||{}).some(x=>x?.status==='paid'))return alert('No active paid course is assigned to this learner yet.');renderPortal();go('portal')};$('admin').onclick=ssAdminLogin;
 // SS Course Assistant: useful immediately with no API key exposed in GitHub.
 // It guides visitors from the approved course catalogue and escalates nuanced enquiries to a human.
 const SS_CONTACT_EMAIL='sstrainingonline@gmail.com';
