@@ -57,8 +57,9 @@ async function ssIsAdmin(){
 
 async function ssAdminLogin(){
   const loginPage=$('login');
-  const email=loginPage?.querySelector('input[type="email"],input:not([type="password"])');
-  const password=loginPage?.querySelector('input[type="password"]');
+  const email=$('loginEmail')||loginPage?.querySelector('input[type="email"],input:not([type="password"])');
+  // Use a stable ID so the show/hide eye can change input type without breaking login.
+  const password=$('loginPassword')||loginPage?.querySelector('input[type="password"]');
   const button=$('admin');
   if(!email||!password)return alert('The login fields could not be found.');
   const enteredEmail=email.value.trim();
@@ -105,6 +106,31 @@ function restoreHistory(st){
 }
 window.addEventListener('popstate',e=>restoreHistory(e.state||{page:(location.hash||'#home').slice(1)}));
 document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>go(b.dataset.page));
+
+// Password visibility control. Uses a stable input ID so revealing the password
+// never interferes with the Appwrite admin login lookup.
+const togglePassword=$('togglePassword'), loginPassword=$('loginPassword');
+if(togglePassword&&loginPassword){
+  togglePassword.onclick=()=>{
+    const show=loginPassword.type==='password';
+    loginPassword.type=show?'text':'password';
+    togglePassword.setAttribute('aria-pressed',String(show));
+    togglePassword.setAttribute('aria-label',show?'Hide password':'Show password');
+    togglePassword.textContent=show?'🙈':'👁';
+  };
+}
+
+// Properly end the Appwrite admin session when the Admin dashboard signs out.
+const adminSignOut=$('adminSignOut');
+if(adminSignOut){
+  adminSignOut.onclick=async()=>{
+    try{await ssAppwriteRequest('/account/sessions/current',{method:'DELETE'})}catch(e){}
+    SS_ADMIN_AUTHORISED=false;
+    const p=$('loginPassword'); if(p){p.value='';p.type='password'}
+    if(togglePassword){togglePassword.textContent='👁';togglePassword.setAttribute('aria-pressed','false');togglePassword.setAttribute('aria-label','Show password')}
+    go('home',{replace:true});
+  };
+}
 if(location.hash==='#adminpage'){
   history.replaceState({page:'login'},'','#login');
   go('login',{fromHistory:true});
